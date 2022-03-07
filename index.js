@@ -5,12 +5,12 @@ app.get("/books",function(req,res) {
     res.send({route:"/books",})
 })
 
-app.get("/libraries",checkPermission,function(req,res) {
+app.get("/libraries",checkPermission("libraries"),function(req,res) {
     res.send({ route: "/libraries", permission: true})
 })
 
-app.get("/authors",checkPermission,function(req,res) {
-    res.send( { route: "/authors", permission:true})
+app.get("/authors",checkPermission("authors"),function(req,res) {
+    res.send( { route: "/authors", permission : true})
 })
 
 function logger(req,res,next)
@@ -19,18 +19,30 @@ function logger(req,res,next)
    next()
 }
 
-function checkPermission(req,res, next)
+function checkPermission(role)
 {
-    if(req.path == "libraries")
-    {
-       return req.permission = "true"
+    return function(req, res, next){
+        if(role=="authors"){
+            if(req.path == "/authors")
+            {
+              return next()
+                // res.send({ route: "/authors", permission : true})
+            }
+        }
+        if(role=="libraries"){
+            if(req.path == "/libraries")
+            {
+              return next()
+                // res.send({ route: "/authors", permission : true})
+            }
+        }
+        else{
+
+            res.send("Not For The Other People")
+        }
     }
-    if(req.path == "authors")
-    {
-        return req.permission = "true"
-    }
-    next()
 }
+
 
 
 
